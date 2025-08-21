@@ -53,6 +53,22 @@
         .glow-text {
             text-shadow: 0 0 10px rgba(173, 216, 230, 0.7);
         }
+        
+        /* New styles for the entry overlay */
+        #entry-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            cursor: pointer;
+            transition: opacity 0.5s ease-out;
+        }
 
         /* Keyframe animation for floating particles (bubbles) */
         @keyframes float {
@@ -92,6 +108,11 @@
     </style>
 </head>
 <body class="bg-[#0a192f] text-white">
+
+    <!-- New Entry Overlay -->
+    <div id="entry-overlay">
+        <h2 class="text-2xl font-bold glow-text">Click anywhere to begin</h2>
+    </div>
 
     <div class="background-container" id="particle-container"></div>
     
@@ -230,29 +251,27 @@
         // --- AMBIENT MUSIC WITH HTML AUDIO ---
         const musicToggle = document.getElementById('music-toggle');
         const audio = document.getElementById('bg-music');
+        const entryOverlay = document.getElementById('entry-overlay');
         let musicPlaying = false;
 
-        // Function to attempt playing audio
-        const playAudio = () => {
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Autoplay started!
-                    musicPlaying = true;
-                    musicToggle.textContent = 'Pause Music';
-                }).catch(error => {
-                    // Autoplay was prevented.
-                    console.log("Autoplay prevented by browser.");
-                    musicPlaying = false;
-                    musicToggle.textContent = 'Play Music';
-                });
-            }
+        // Function to start the music
+        const startMusic = () => {
+            audio.play().catch(error => console.error("Audio play failed:", error));
+            musicPlaying = true;
+            musicToggle.textContent = 'Pause Music';
         };
 
-        // Try to autoplay when the window loads
-        window.addEventListener('load', playAudio);
+        // Event listener for the entry overlay
+        entryOverlay.addEventListener('click', () => {
+            startMusic();
+            // Fade out and remove the overlay
+            entryOverlay.style.opacity = '0';
+            setTimeout(() => {
+                entryOverlay.style.display = 'none';
+            }, 500); // Match transition duration
+        }, { once: true }); // Only run this once
 
-        // Manual play/pause control
+        // Manual play/pause control for the top-right button
         musicToggle.addEventListener('click', () => {
             if (!musicPlaying) {
                 audio.play();
