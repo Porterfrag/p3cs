@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memories of You</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevents scrollbars */
+        }
+
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #0a192f 0%, #020c1b 100%);
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: rgba(173, 216, 230, 0.4);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(173, 216, 230, 0.5);
+            opacity: 0;
+            animation: float 25s infinite ease-in-out;
+            z-index: 2;
+        }
+
+        .scrolling-image-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            /* max-width is now set dynamically in JS */
+            animation: scrollUp linear infinite;
+            opacity: 0;
+            z-index: 5; /* Ensure images are behind text but above background */
+        }
+
+        .scrolling-image {
+            width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(173, 216, 230, 0.7);
+        }
+
+        /* Keyframe animation for floating particles (bubbles) */
+        @keyframes float {
+            0% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10vh);
+                opacity: 0;
+            }
+        }
+
+        /* Keyframe animation for scrolling image */
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(110vh); /* Start further down */
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.7; /* Fade in */
+            }
+            85% {
+                opacity: 0.7; /* Fade out */
+            }
+            100% {
+                transform: translateY(-110vh); /* End further up */
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#0a192f] text-white">
+
+    <div class="background-container" id="particle-container"></div>
+    
+    <!-- Container for dynamically generated images -->
+    <div id="image-scroll-wrapper" class="absolute top-0 left-0 w-full h-full overflow-hidden"></div>
+
+    <div class="min-h-screen flex flex-col items-center justify-center text-center p-4 relative z-10">
+        <main class="flex flex-col items-center justify-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 animate-fadeIn glow-text">
+                Memories of You
+            </h1>
+            <p class="text-lg md:text-xl max-w-2xl text-gray-300 animate-fadeIn delay-500 glow-text">
+                A promise is a promise. It's been a long journey, but it's finally over.
+                Now, I can be with everyone. I won't forget our time together.
+            </p>
+        </main>
+        
+        <div class="absolute top-5 right-5 z-20">
+            <button id="music-toggle" class="bg-blue-500/30 text-white font-bold py-2 px-4 rounded-lg border border-blue-400/50 hover:bg-blue-500/50 transition-colors duration-300">
+                Play Music
+            </button>
+        </div>
+
+        <footer class="absolute bottom-8 text-gray-500 text-sm">
+            <p>Inspired by Persona 3 Reload</p>
+        </footer>
+    </div>
+    
+    <!-- Audio Player -->
+    <!-- IMPORTANT: Replace the src attribute below with the direct link to your music file -->
+    <audio id="bg-music" loop>
+        <source src="https://files.catbox.moe/jexu15.flac" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // --- BUBBLE PARTICLE GENERATION ---
+        const particleContainer = document.getElementById('particle-container');
+        const particleCount = 40;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            const size = Math.random() * 6 + 2; // 2px to 8px
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${Math.random() * 100}%`;
+            
+            const animationDuration = Math.random() * 20 + 15; // 15s to 35s
+            particle.style.animationDelay = `${Math.random() * animationDuration}s`;
+            particle.style.animationDuration = `${animationDuration}s`;
+            
+            particleContainer.appendChild(particle);
+        }
+
+        // --- IMAGE SCROLLER GENERATION ---
+        const imageWrapper = document.getElementById('image-scroll-wrapper');
+        
+        const imageUrls = [
+            'https://i.imgur.com/MlaXAk8.jpeg', 'https://i.imgur.com/N0B8EyB.jpeg',
+            'https://i.imgur.com/x2n7ACc.jpeg', 'https://i.imgur.com/8dBKhw4.jpeg',
+            'https://i.imgur.com/JpbQCxV.jpeg', 'https://i.imgur.com/ZMZQEpV.jpeg',
+            'https://i.imgur.com/WuGsSwc.jpeg', 'https://i.imgur.com/ubHCese.jpeg',
+            'https://i.imgur.com/J3E4oKG.jpeg', 'https://i.imgur.com/Jrz2Anj.jpeg',
+            'https://i.imgur.com/fJyFX9G.jpeg', 'https://i.imgur.com/IIQ0usj.jpeg',
+            'https://i.imgur.com/RtOgHwU.jpeg', 'https://i.imgur.com/9bbtVp4.jpeg',
+            'https://i.imgur.com/tHLsk5G.jpeg', 'https://i.imgur.com/u3Km0a2.jpeg',
+            'https://i.imgur.com/97A1FS4.jpeg', 'https://i.imgur.com/4zEMXnj.jpeg',
+            'https://i.imgur.com/PfyOyZY.jpeg', 'https://i.imgur.com/YaBeui5.jpeg',
+            'https://i.imgur.com/KPasUGa.jpeg', 'https://i.imgur.com/WR8GizQ.jpeg',
+            'https://i.imgur.com/UmNBQej.jpeg'
+        ];
+
+        const lanes = [
+            { side: 'left', position: '2%' }, { side: 'right', position: '2%' },
+            { side: 'left', position: '18%' }, { side: 'right', position: '18%' },
+            { side: 'left', position: '34%' }, { side: 'right', position: '34%' }
+        ];
+        
+        const laneNextAvailableTime = new Array(lanes.length).fill(0);
+        const shuffledImages = imageUrls.sort(() => 0.5 - Math.random());
+
+        shuffledImages.forEach((url, i) => {
+            const laneIndex = i % lanes.length;
+            const currentLane = lanes[laneIndex];
+
+            const container = document.createElement('div');
+            container.classList.add('scrolling-image-container');
+
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = `Cherished memory ${i + 1}`;
+            img.classList.add('scrolling-image');
+            img.onerror = function() {
+                this.onerror = null;
+                this.src = `https://placehold.co/400x600/0a192f/FFFFFF?text=Image+Not+Found`;
+            };
+
+            container.style[currentLane.side] = currentLane.position;
+            
+            const animationDelay = laneNextAvailableTime[laneIndex];
+            const animationDuration = Math.random() * 20 + 30;
+            const imageWidth = Math.random() * 100 + 150;
+
+            container.style.maxWidth = `${imageWidth}px`;
+            container.style.animationDelay = `${animationDelay}s`;
+            container.style.animationDuration = `${animationDuration}s`;
+            container.style.animationName = 'scrollUp';
+
+            const separationTime = animationDuration * 0.3;
+            laneNextAvailableTime[laneIndex] += separationTime;
+
+            container.appendChild(img);
+            imageWrapper.appendChild(container);
+        });
+
+        // --- TEXT FADE-IN ANIMATION ---
+        const fadeInElements = document.querySelectorAll('.animate-fadeIn');
+        fadeInElements.forEach((el, index) => {
+            el.style.animation = `fadeIn 1s ease-out ${index * 0.5}s forwards`;
+            el.style.opacity = '0';
+        });
+
+        const keyframes = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        `;
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = keyframes;
+        document.head.appendChild(styleSheet);
+        
+        // --- AMBIENT MUSIC WITH HTML AUDIO ---
+        const musicToggle = document.getElementById('music-toggle');
+        const audio = document.getElementById('bg-music');
+        let musicPlaying = false;
+
+        // Function to attempt playing audio
+        const playAudio = () => {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Autoplay started!
+                    musicPlaying = true;
+                    musicToggle.textContent = 'Pause Music';
+                }).catch(error => {
+                    // Autoplay was prevented.
+                    console.log("Autoplay prevented by browser.");
+                    musicPlaying = false;
+                    musicToggle.textContent = 'Play Music';
+                });
+            }
+        };
+
+        // Try to autoplay when the window loads
+        window.addEventListener('load', playAudio);
+
+        // Manual play/pause control
+        musicToggle.addEventListener('click', () => {
+            if (!musicPlaying) {
+                audio.play();
+                musicPlaying = true;
+                musicToggle.textContent = 'Pause Music';
+            } else {
+                audio.pause();
+                musicPlaying = false;
+                musicToggle.textContent = 'Play Music';
+            }
+        });
+
+    </script>
+
+</body>
+</html>
